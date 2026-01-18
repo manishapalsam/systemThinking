@@ -3,6 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/SYSTEM_THINKING.iml" filepath="$PROJECT_DIR$/.idea/SYSTEM_THINKING.iml" />
+      <module fileurl="file://$PROJECT_DIR$/inventoryService/inventoryService.iml" filepath="$PROJECT_DIR$/inventoryService/inventoryService.iml" />
+      <module fileurl="file://$PROJECT_DIR$/orderService/orderService.iml" filepath="$PROJECT_DIR$/orderService/orderService.iml" />
+      <module fileurl="file://$PROJECT_DIR$/paymentService/paymentService.iml" filepath="$PROJECT_DIR$/paymentService/paymentService.iml" />
     </modules>
   </component>
 </project>
