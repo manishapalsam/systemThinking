@@ -14,6 +14,9 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import org.slf4j.Logger;
+
+import java.net.URI;
+
 @RestController
 @RequestMapping("/api/v1/orders")
 public class OrderController {
@@ -21,23 +24,37 @@ public class OrderController {
 //    private static final Logger log =
 //            LoggerFactory.getLogger(OrderController.class);
 
-   // private final RestTemplate restTemplate;
+    // private final RestTemplate restTemplate;
 
-    private  final OrderService orderService;
+    private final OrderService orderService;
 
-    public OrderController( OrderService orderService){
-       // this.restTemplate = restTemplate;
+    public OrderController(OrderService orderService) {
+        // this.restTemplate = restTemplate;
         this.orderService = orderService;
 
     }
 
 
-    @PostMapping
-    public ResponseEntity<OrderResponse> createOrder(@Valid  @RequestBody OrderRequest orderRequest){
-       // return orderService.createOrder(product, quantity, "CREATED");
+    public ResponseEntity<OrderResponse> createOrder(@Valid @RequestBody OrderRequest orderRequest) {
+
+        // @RequestBody → converts incoming JSON into OrderRequest object
+        // @Valid → automatically checks validations (like quantity > 0)
+
+        // Controller delegates business logic to service layer
+        // WHY: Controller should be thin (RULE: Separation of concerns)
+
         OrderResponse orderResponse = orderService.createOrder(orderRequest);
-        return  new ResponseEntity<>(orderResponse, HttpStatus.CREATED);
+
+
+        // Location header tells client WHERE the newly created resource exists
+        // Example: /api/v1/orders/ORD-10001
+        // RULE: Correct HTTP Semantics
+        URI location = URI.create("/api/v1/orders" + orderResponse.getOrderId());
+        //return new ResponseEntity<>(orderResponse, HttpStatus.CREATED);
+        return ResponseEntity.created(location).body(orderResponse);// sets 201 + Location header
     }
+}
+
 //
 //
 //    @PostMapping
@@ -83,6 +100,6 @@ public class OrderController {
 //        }
 
     // }
-}
+
 
 
