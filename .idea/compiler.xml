@@ -6,24 +6,23 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="inventoryService" />
-        <module name="paymentService" />
-        <module name="SYSTEM_THINKING" />
-        <module name="orderService" />
+        <module name="payment-service" />
+        <module name="inventory-service" />
+        <module name="order-service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="inventoryService" target="17" />
-      <module name="orderService" target="17" />
-      <module name="paymentService" target="17" />
+      <module name="inventory-service" target="19" />
+      <module name="order-service" target="19" />
+      <module name="payment-service" target="19" />
       <module name="SYSTEM_THINKING" target="19" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="inventoryService" options="-parameters" />
-      <module name="orderService" options="-parameters" />
-      <module name="paymentService" options="-parameters" />
+      <module name="inventory-service" options="" />
+      <module name="order-service" options="" />
+      <module name="payment-service" options="" />
     </option>
   </component>
 </project>
