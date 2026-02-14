@@ -1,46 +1,25 @@
-🧠 Why do all requests log “Reserved”, but only some succeed?
 
-This project intentionally demonstrates a race condition and its fix using Optimistic Locking.
+WEEK3: COUNCURRENCY & TRANSACTION  CHECK
 
-The confusing part
+->RACE CONDITION WHILE RESERVING INVENTORY :
+    CLICK HERE (https://github.com/manishapalsam/systemThinking/blob/fdcfef033653d1dd5b68b06db31d78477b188f3b/RaceCondition_SnapShot.png)
+    
+    CONCURRENT REQUEST = 20
+    P5 STOCK AVAILABILITY = 5
+    ORDER CONFIRMED = 20
+    P5 STOCK AVAILABILITY = 3
 
-You may notice logs like:
-
-Reserved 1 unit of product P3
-Reserved 1 unit of product P3
-Reserved 1 unit of product P3
-
-
-…but in reality, only 1 or 2 orders actually succeed.
-
-This looks wrong — but it’s expected behavior.
-
-🚨 Important concept (in simple words)
-
-Inside a @Transactional method:
-
-save() does NOT immediately update the database
-
-Instead:
-
-Hibernate updates the object in memory
-
-Marks it as “changed”
-
-Delays the real database update
-
-So:
-
-inventoryRepository.save(inventory);
+-> OPTIMISTIC LOCKING using @Version Annotattion
+  CLICK HERE (https://github.com/manishapalsam/systemThinking/blob/8e1ecc9d8bb7d3b76032a53106897dd11e1be7d6/Optimistic_Locking.png)
+   
+     CONCURRENT REQUEST = 10
+    P5 STOCK AVAILABILITY = 5
+    ORDER CONFIRMED = 1, OTHER 9 CONCURRENT REQUEST FAILED
+     P5 STOCK AVAILABILITY = 4
+    
 
 
-means:
-
-“I’ll update this later when the transaction finishes”
-
-—not “update DB right now”.
-
-
+    
 
 
 
