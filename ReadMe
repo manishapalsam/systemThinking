@@ -10,7 +10,7 @@ WEEK3: COUNCURRENCY & TRANSACTION  CHECK
     P5 STOCK AVAILABILITY = 3
 
 -> OPTIMISTIC LOCKING
-  CLICK HERE (https://github.com/manishapalsam/systemThinking/blob/fdcfef033653d1dd5b68b06db31d78477b188f3b/RaceCondition_SnapShot.png)
+  CLICK HERE (https://github.com/manishapalsam/systemThinking/blob/8e1ecc9d8bb7d3b76032a53106897dd11e1be7d6/Optimistic_Locking.png)
    
      CONCURRENT REQUEST = 5
     P5 STOCK AVAILABILITY = 5
