@@ -1,3 +1,9 @@
+
+
+
+
+![image alt](https://github.com/manishapalsam/systemThinking/blob/be679b6a4a3216a405440b7e9513c0edc8808632/Screenshot%20(17).png)
+
 🧠 Why do all requests log “Reserved”, but only some succeed?
 
 This project intentionally demonstrates a race condition and its fix using Optimistic Locking.
