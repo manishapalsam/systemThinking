@@ -1,0 +1,9 @@
+Inventory says → OUT_OF_STOCK (409)
+
+Order Service:
+   ↓
+Reads error
+   ↓
+Throws OrderBusinessException
+   ↓
+GlobalExceptionHandler converts to ApiError JSON

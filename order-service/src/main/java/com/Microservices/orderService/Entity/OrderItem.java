@@ -1,6 +1,9 @@
 package com.Microservices.orderService.Entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 
 @Entity
@@ -17,8 +20,10 @@ public class OrderItem {
     private  Order order;
 
 
+    @NotBlank(message = "Product ID is required")
     @Column(nullable = false)
     private  String productId;
+
 
 
     @Column(nullable = false)

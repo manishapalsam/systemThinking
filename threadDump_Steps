@@ -1,0 +1,3 @@
+Find the Java process ID (PID): jps -l
+
+Take a thread dump using jstack: jstack -l <PID> > orderservice-threaddump.txt

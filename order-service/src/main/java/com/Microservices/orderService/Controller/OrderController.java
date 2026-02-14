@@ -5,8 +5,12 @@ import com.Microservices.orderService.Entity.Order;
 import com.Microservices.orderService.Service.OrderService;
 import com.Microservices.orderService.dto.OrderRequest;
 import com.Microservices.orderService.dto.OrderResponse;
+import com.Microservices.orderService.dto.OrderSummaryResponse;
 import jakarta.validation.Valid;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.support.PageableUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -53,9 +57,41 @@ public class OrderController {
         //return new ResponseEntity<>(orderResponse, HttpStatus.CREATED);
         return ResponseEntity.created(location).body(orderResponse);// sets 201 + Location header
     }
-}
+
+
+//    Rule #2 – Resource-Oriented Design
+///orders/{orderId} is a resource
 
 //
+//    Rule #3 – Correct HTTP Semantics
+//    GET → read
+//200 → found
+//404 → not found
+//
+//    Rule #1 – API is a Contract
+//    Clients depend on predictable responses
+
+
+    @GetMapping("/{orderId}")
+    public ResponseEntity<OrderResponse> getOrderById(@PathVariable("orderId") String orderId) {
+        return ResponseEntity.ok(orderService.getOrderById(orderId));
+    }
+
+    //Searh
+    @GetMapping
+    public ResponseEntity<Page<OrderSummaryResponse>> searchOrders(
+            @RequestParam(name = "status", required = false) String status, Pageable pageable
+    ) {
+        Page<OrderSummaryResponse> result = orderService.searchOrders(status, pageable);
+        return ResponseEntity.ok(result);
+    }
+
+
+}
+
+
+
+    //
 //
 //    @PostMapping
 //    public String placeOrder(){

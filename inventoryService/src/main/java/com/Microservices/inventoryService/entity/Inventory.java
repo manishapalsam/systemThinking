@@ -1,9 +1,8 @@
 package com.Microservices.inventoryService.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
+import java.nio.channels.InterruptedByTimeoutException;
 
 @Entity
 @Table(name= "inventory")
@@ -16,6 +15,9 @@ public class Inventory {
 
     @Column(nullable = false)
     private Integer reservedQuantity;
+
+    @Version
+    private Long version; //OPTIMISTIC LOCKING
     public Inventory() {}
 
     public Inventory(String productId, Integer availableQuantity, Integer reservedQuantity) {
@@ -49,6 +51,7 @@ public class Inventory {
     }
 
     public Integer getAvailableStock() {
+        //Thread.sleep(8000);
         return availableQuantity - reservedQuantity;
     }
 }

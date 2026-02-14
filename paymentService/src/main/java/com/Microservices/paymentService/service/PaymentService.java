@@ -22,6 +22,7 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
 
     public PaymentService(PaymentRepository paymentRepository) {
+        //Thread.sleep(8000);
         this.paymentRepository = paymentRepository;
 
     }
@@ -30,6 +31,8 @@ public class PaymentService {
            logger.info("Processing payment for order: {}, amount: {}", paymentRequest.getOrderId(), paymentRequest.getAmount());
        String transactionId = "TXN" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
 
+
+       //mocking
        Thread.sleep(8000);
        //create payment record
            Payment payment = new Payment();

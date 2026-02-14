@@ -3,6 +3,8 @@ package com.Microservices.inventoryService.service;
 import com.Microservices.inventoryService.dto.InventoryRequest;
 import com.Microservices.inventoryService.entity.Inventory;
 import com.Microservices.inventoryService.exception.InventoryServiceException;
+import com.Microservices.inventoryService.exception.OutOfStockException;
+import com.Microservices.inventoryService.exception.ProductNotFoundException;
 import com.Microservices.inventoryService.repository.InventoryRepository;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -40,7 +42,9 @@ public  void reserveInventory(InventoryRequest inventoryRequest){
             // Check if all products exist
         if(inventories.size() != productIds.size()){
             logger.error("One or more products not found for ids: {}", productIds);
-            throw new InventoryServiceException("One or more products not found");
+
+            throw new ProductNotFoundException("Multiple products missing");
+            //throw new InventoryServiceException("One or more products not found");
         }
 
            // Check availability and reserve
@@ -51,12 +55,22 @@ public  void reserveInventory(InventoryRequest inventoryRequest){
                     .orElseThrow(() -> new InventoryServiceException("Product not found: " + item.getProductId()));
             if(inventory.getAvailableStock() < item.getQuantity()){
                 logger.warn("Insufficient stock for product: {} , available: {}, requested: {}", item.getProductId(), inventory.getAvailableStock(), item.getQuantity());
-                throw new InventoryServiceException("Insufficient stock for product: " + item.getProductId());
+
+                //API CONTRACT.
+                throw  new OutOfStockException(item.getProductId());
+                //throw new InventoryServiceException("Insufficient stock for product: " + item.getProductId());
             }
+
+
+//
+
+
             // Reserve the inventory
             inventory.setReservedQuantity(inventory.getReservedQuantity() + item.getQuantity());
             inventoryRepository.save(inventory);
-            logger.info("Reserved {} units of product {}", item.getQuantity(), item.getProductId());
+            inventoryRepository.flush();
+            //added "inventoryRequest" variable to check which request's order getting confirmed during optimistic locking
+            logger.info("Reserved {} units of product {} for {}", item.getQuantity(), item.getProductId(), inventoryRequest);
             }
         }
         catch (Exception e) {

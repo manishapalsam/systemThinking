@@ -1,5 +1,7 @@
 package com.Microservices.orderService.dto;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -11,7 +13,7 @@ public class OrderRequest {
     @NotBlank(message = "Customer ID is required")
     private String customerId;
 
-
+    @Valid
     @NotEmpty(message = "Items cannot be empty")
     private  List<OrderItemRequest> items;
 
@@ -51,6 +53,7 @@ public class OrderRequest {
         @NotBlank(message = "Product ID is required")
         private  String productId;
 
+        @Min(value = 1, message = "Quantity must be greater than zero")
         @NotNull(message = "Quantity is required")
         private Integer quantity;
 

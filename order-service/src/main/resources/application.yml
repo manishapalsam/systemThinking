@@ -22,7 +22,11 @@ logging:
   level:
     com.systemthinking.orderservice: DEBUG
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+      base-path: /actuator
 
-  server:
-    tomcat:
-      max-threads: 10
+

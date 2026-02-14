@@ -2,6 +2,8 @@ package com.Microservices.orderService.Entity;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -37,6 +39,8 @@ Get Order
 EAGER → Order + Items come together
 LAZY  → Order first, Items later (on demand)
 */
+
+
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<OrderItem> items;

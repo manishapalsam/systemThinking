@@ -1,6 +1,8 @@
 package com.Microservices.orderService.Repository;
 
 import com.Microservices.orderService.Entity.Order;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,5 +14,7 @@ public interface OrderRepository  extends JpaRepository<Order, String> {
 
 
 Optional<Order> findByCustomerId(String customerId);
+
+Page<Order> findByStatus(Order.OrderStatus status, Pageable pageable);
 
 }

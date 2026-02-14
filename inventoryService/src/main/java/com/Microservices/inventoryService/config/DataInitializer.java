@@ -16,9 +16,9 @@ public class DataInitializer implements CommandLineRunner {
         // Initialize sample inventory data
         inventoryRepository.save(new Inventory("P1", 400, 0));
         inventoryRepository.save(new Inventory("P2", 400, 0));
-        inventoryRepository.save(new Inventory("P3", 400, 0));
-        inventoryRepository.save(new Inventory("P4", 400, 0));
-        inventoryRepository.save(new Inventory("P5", 400, 0));
+        inventoryRepository.save(new Inventory("P3", 500, 0));
+        inventoryRepository.save(new Inventory("P4", 10, 0));
+        inventoryRepository.save(new Inventory("P5", 5, 0));
 
         System.out.println("Sample inventory data initialized");
 
