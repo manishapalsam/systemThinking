@@ -1,7 +1,7 @@
 
 WEEK3: COUNCURRENCY & TRANSACTION  CHECK
 
-->RACE CONDITION IMPLEMENTATION:
+->RACE CONDITION WHILE RESERVING INVENTORY :
     CLICK HERE (https://github.com/manishapalsam/systemThinking/blob/fdcfef033653d1dd5b68b06db31d78477b188f3b/RaceCondition_SnapShot.png)
     
     CONCURRENT REQUEST = 20
@@ -9,7 +9,7 @@ WEEK3: COUNCURRENCY & TRANSACTION  CHECK
     ORDER CONFIRMED = 20
     P5 STOCK AVAILABILITY = 3
 
--> OPTIMISTIC LOCKING
+-> OPTIMISTIC LOCKING using @Version Annotattion
   CLICK HERE (https://github.com/manishapalsam/systemThinking/blob/8e1ecc9d8bb7d3b76032a53106897dd11e1be7d6/Optimistic_Locking.png)
    
      CONCURRENT REQUEST = 5
