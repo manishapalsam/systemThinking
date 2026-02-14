@@ -1,5 +1,8 @@
 package com.Microservices.orderService.exception;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DownstreamApiError {
 
     private String title;

@@ -39,6 +39,8 @@ public class OrderController {
     }
 
 
+    @PostMapping
+
     public ResponseEntity<OrderResponse> createOrder(@Valid @RequestBody OrderRequest orderRequest) {
 
         // @RequestBody → converts incoming JSON into OrderRequest object

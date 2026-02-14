@@ -138,11 +138,11 @@ public class OrderService {
         } catch (HttpClientErrorException.Conflict ex) {
             // Inventory Business Conflict → Order Business Conflict
 
-
+            System.out.println(ex.getResponseBodyAsString());
             DownstreamApiError error = parseError(ex);
             throw new BusinessConflictException(
-                    error.getDetails(),
-                    error.getTitle());
+                    error.getTitle(),     // errorCode
+                    error.getDetails()) ; // message
         } catch (Exception ex) {
             logger.error("Failed to reserve inventory: {}", ex.getMessage(), ex);
             //  throw new OrderServiceException("Failed to reserve inventory: " + e.getMessage(), e);
@@ -199,7 +199,7 @@ public class OrderService {
         );
     }
 
-
+//We use ObjectMapper to convert the raw JSON error response from another service into a Java object so we can read and use its fields (like title and details).
     private DownstreamApiError  parseError(HttpClientErrorException ex) {
 
         try {
@@ -217,4 +217,15 @@ public class OrderService {
     }
 }
 
-
+//🚫 If you don’t separate:
+// You tightly couple Order Service’s internal error model to Inventory’s error model.
+//
+//        If Inventory changes tomorrow → your Order Service may break.
+//
+//        ✅ Best Practice:
+//
+//        Use DownstreamApiError for deserializing external response.
+//
+//        Convert it into your own ApiError before returning.
+//
+//        This keeps services loosely coupled (microservice principle).

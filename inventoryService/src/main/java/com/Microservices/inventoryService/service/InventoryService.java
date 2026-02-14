@@ -9,75 +9,69 @@ import com.Microservices.inventoryService.repository.InventoryRepository;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 
-@Transactional
+
+
+//actual db call
 @Service
 public class InventoryService {
 
     private static  final Logger logger = LoggerFactory.getLogger(InventoryService.class);
 
     private final InventoryRepository inventoryRepository;
+    private final InventoryTransactionService transactionService;
 
-   // public InventoryService(){}
 
-    public InventoryService(InventoryRepository inventoryRepository) {
+
+     // public InventoryService(){}
+
+    public InventoryService(InventoryRepository inventoryRepository, InventoryTransactionService transactionService) {
         this.inventoryRepository = inventoryRepository;
+        this.transactionService = transactionService;
     }
 
 
-public  void reserveInventory(InventoryRequest inventoryRequest){
-        try{
-            logger.info("Reserving inventory for request: {}", inventoryRequest);
-            List<String> productIds = inventoryRequest.getItems().stream()
-                    .map(InventoryRequest.InventoryItemRequest::getProductId)
-                    .collect(Collectors.toList());
 
 
-            List<Inventory> inventories = inventoryRepository.findByProductIdIn(productIds);
-            // Check if all products exist
-        if(inventories.size() != productIds.size()){
-            logger.error("One or more products not found for ids: {}", productIds);
+    public void reserveInventory(InventoryRequest inventoryRequest) {
 
-            throw new ProductNotFoundException("Multiple products missing");
-            //throw new InventoryServiceException("One or more products not found");
-        }
+        int maxRetries = 3;
+        int attempt = 0;
 
-           // Check availability and reserve
-        for(InventoryRequest.InventoryItemRequest item : inventoryRequest.getItems()){
-            Inventory inventory = inventories.stream()
-                    .filter(inv -> inv.getProductId().equals(item.getProductId()))
-                    .findFirst()
-                    .orElseThrow(() -> new InventoryServiceException("Product not found: " + item.getProductId()));
-            if(inventory.getAvailableStock() < item.getQuantity()){
-                logger.warn("Insufficient stock for product: {} , available: {}, requested: {}", item.getProductId(), inventory.getAvailableStock(), item.getQuantity());
+        while (attempt < maxRetries) {
+            try {
+                attempt++;
+                logger.info("Reserve attempt {} for {}", attempt, inventoryRequest);
 
-                //API CONTRACT.
-                throw  new OutOfStockException(item.getProductId());
-                //throw new InventoryServiceException("Insufficient stock for product: " + item.getProductId());
-            }
+                transactionService.reserveInventoryInternal(inventoryRequest);
 
+                return; // success
 
-//
+            } catch (ObjectOptimisticLockingFailureException |
+                     org.hibernate.StaleObjectStateException ex) {
 
+                if (attempt >= maxRetries) {
+                    throw new InventoryServiceException("Inventory busy, please retry order");
+                }
 
-            // Reserve the inventory
-            inventory.setReservedQuantity(inventory.getReservedQuantity() + item.getQuantity());
-            inventoryRepository.save(inventory);
-            inventoryRepository.flush();
-            //added "inventoryRequest" variable to check which request's order getting confirmed during optimistic locking
-            logger.info("Reserved {} units of product {} for {}", item.getQuantity(), item.getProductId(), inventoryRequest);
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
             }
         }
-        catch (Exception e) {
-            logger.error("Failed to reserve inventory: {}", e.getMessage(), e);
-            throw new InventoryServiceException("Failed to reserve inventory: " + e.getMessage(), e);
-        }
-}
+    }
+
+
+
 
     //inventory service
     public Integer getAvailableStock(String productId){
