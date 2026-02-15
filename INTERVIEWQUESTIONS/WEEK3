@@ -1,3 +1,98 @@
+
+
+
+
+===================================================
+📌14-2-26
+ Circular Dependency Error – Short Notes
+🔹 What Is Circular Dependency?
+
+When two Spring beans depend on each other.
+
+Example:
+
+InventoryService → InventoryTransactionService
+InventoryTransactionService → InventoryService
+
+
+This creates a loop.
+
+Spring cannot decide which one to create first.
+
+🔹 Why Spring Fails to Start?
+
+Spring creates beans at startup.
+
+If:
+
+Bean A needs Bean B
+Bean B needs Bean A
+
+
+Spring gets stuck in infinite creation loop.
+
+So modern Spring Boot blocks it by default.
+
+Error:
+
+Relying upon circular references is discouraged
+
+🔹 Why It Happened In Our Case?
+
+We injected:
+
+@Autowired
+private InventoryTransactionService transactionService;
+
+
+inside InventoryService
+
+AND
+
+@Autowired
+private InventoryService inventoryService;
+
+
+inside InventoryTransactionService
+
+That created:
+
+Service A ↔ Service B
+
+🔹 How To Fix It?
+
+✔ Remove one dependency
+✔ Only one direction allowed
+
+Correct structure:
+
+Controller
+   ↓
+InventoryService (retry logic)
+   ↓
+InventoryTransactionService (@Transactional)
+   ↓
+Repository
+
+
+❌ TransactionService must NOT depend on InventoryService.
+
+🔹 Important Rule
+
+If A depends on B,
+B must NOT depend on A.
+
+🔹 Bad Solution (Do NOT Use)
+spring.main.allow-circular-references=true
+
+
+This hides bad design.
+
+Always fix architecture instead.
+
+
+
+
 📘 15-02-26 — Double Refund (Exactly-Once Failure)
 🔹 Scenario
 
