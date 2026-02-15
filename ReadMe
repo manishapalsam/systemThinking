@@ -36,6 +36,7 @@ WEEK3: COUNCURRENCY & TRANSACTION  CHECK
 
 
     -> UNIQUE DB CONSTARINT FOR TABLE "REFUNDS"
+
     EG: @Entity
         @Table(
             name = "refunds",
@@ -44,6 +45,7 @@ WEEK3: COUNCURRENCY & TRANSACTION  CHECK
             }
         )
 
+CLICK HERE : (https://github.com/manishapalsam/systemThinking/blob/b75470917a4319bf1358c938ad4aa6e54e35e003/UNIQUECONSTARINT.png)
         Now:
             Race condition still exists
             But DB prevented data corruption
