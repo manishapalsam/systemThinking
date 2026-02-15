@@ -217,7 +217,9 @@ public class OrderService {
     }
 }
 
-//🚫 If you don’t separate:
+//14-2-26
+
+// If you don’t separate:
 // You tightly couple Order Service’s internal error model to Inventory’s error model.
 //
 //        If Inventory changes tomorrow → your Order Service may break.

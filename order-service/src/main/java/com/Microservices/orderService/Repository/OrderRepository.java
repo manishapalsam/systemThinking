@@ -8,13 +8,15 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-
+//manages orders table
 @Repository
 public interface OrderRepository  extends JpaRepository<Order, String> {
 
 
-Optional<Order> findByCustomerId(String customerId);
+   // static Optional<Order> findById(String id);
+    Optional<Order> findByCustomerId(String customerId);
 
 Page<Order> findByStatus(Order.OrderStatus status, Pageable pageable);
+
 
 }

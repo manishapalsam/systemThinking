@@ -1,0 +1,92 @@
+📘 15-02-26 — Double Refund (Exactly-Once Failure)
+🔹 Scenario
+
+Customer reported they received refund twice.
+Application logs looked clean.
+No exceptions were thrown.
+
+🔹 Refund API Implementation (Bad Version)
+Flow:
+
+Load Order by ID
+
+Check if refund already exists
+
+If exists → throw error
+
+If not → create refund record
+
+Save refund
+
+Return success
+
+This logic looks correct.
+
+This is how most developers implement it.
+
+But it is broken under concurrency.
+
+🔹 Where the Race Condition Happens
+
+Two concurrent requests hit the refund API at the same time.
+
+Thread Execution:
+
+Thread A → Step 2 → No refund found
+Thread B → Step 2 → No refund found
+
+Both threads pass the check.
+Both insert refund records.
+
+🔹 Result in Database
+
+Two refund rows
+
+Same order_id
+
+Different refund_id
+
+🔹 Observed Symptoms
+
+API returned 200 OK for both calls
+
+No exception thrown
+
+Logs looked clean
+
+Finance mismatch occurred
+
+🔹 Root Cause
+
+This is a check-then-act race condition.
+
+The check (findByOrderId) and the insert (save) were not atomic.
+
+There was no:
+
+Unique constraint
+
+Locking
+
+Idempotency guard
+
+Two concurrent transactions passed the existence check before either inserted the refund.
+
+🔹 Why Logs Look Clean?
+
+Each transaction was individually valid.
+
+There was no database constraint violation.
+
+The race condition occurred between the check and insert steps.
+
+🔹 Concept Learned
+Check-Then-Act problem
+Non-idempotent API
+Exactly-Once failure
+Transactions alone do NOT guarantee correctness under concurrency:
+   -> Transactions ≠ Concurrency Control
+        Why?
+    Because transactions ensure atomicity per request(either execute or fail), but do not prevent race conditions between multiple requests.
+    In My Case:
+    Both transactions checked refund existence before either inserted → duplicate refund created.
