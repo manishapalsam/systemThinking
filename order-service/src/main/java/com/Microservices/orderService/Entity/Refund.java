@@ -6,10 +6,11 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "refunds",
-        uniqueConstraints  = {
-        @UniqueConstraint(columnNames = {"order_id"})
-        }
+@Table(name = "refunds"
+//        ,
+//        uniqueConstraints  = {
+//        @UniqueConstraint(columnNames = {"order_id"})
+//        }
 )
 public class Refund {
 

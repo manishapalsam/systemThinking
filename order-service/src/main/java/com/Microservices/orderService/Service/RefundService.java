@@ -28,7 +28,11 @@ public class RefundService {
     //vulnerable logic
     @Transactional //Transaction does NOT solve race condition
     public void refundOrder(String orderId){
-        Order order = orderRepository.findById(orderId)
+
+       // Order order = orderRepository.findById(orderId)
+
+        Order order = orderRepository.findByIdForUpdate(orderId)
+
                 .orElseThrow(() -> new RuntimeException("Order not found"));
 
         List<Refund> existingRefunds = refundRepository.findByOrderId(orderId);
