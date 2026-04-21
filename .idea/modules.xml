@@ -4,8 +4,11 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/SYSTEM_THINKING.iml" filepath="$PROJECT_DIR$/.idea/SYSTEM_THINKING.iml" />
       <module fileurl="file://$PROJECT_DIR$/inventoryService/inventory-service.iml" filepath="$PROJECT_DIR$/inventoryService/inventory-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/inventory-service2/inventory-service2.iml" filepath="$PROJECT_DIR$/inventory-service2/inventory-service2.iml" />
       <module fileurl="file://$PROJECT_DIR$/order-service/order-service.iml" filepath="$PROJECT_DIR$/order-service/order-service.iml" />
       <module fileurl="file://$PROJECT_DIR$/paymentService/payment-service.iml" filepath="$PROJECT_DIR$/paymentService/payment-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/payment-service2/payment-service2.iml" filepath="$PROJECT_DIR$/payment-service2/payment-service2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/security-service/security-service.iml" filepath="$PROJECT_DIR$/security-service/security-service.iml" />
     </modules>
   </component>
 </project>

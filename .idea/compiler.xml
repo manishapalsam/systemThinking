@@ -2,6 +2,7 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
       <profile name="Maven default annotation processors profile" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
@@ -9,12 +10,18 @@
         <module name="order-service" />
         <module name="inventory-service" />
         <module name="payment-service" />
+        <module name="inventory-service2" />
+        <module name="payment-service2" />
+        <module name="security-service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="inventory-service" target="19" />
+      <module name="inventory-service2" target="19" />
       <module name="order-service" target="19" />
       <module name="payment-service" target="19" />
+      <module name="payment-service2" target="19" />
+      <module name="security-service" target="19" />
       <module name="SYSTEM_THINKING" target="19" />
     </bytecodeTargetLevel>
   </component>

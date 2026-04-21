@@ -1,0 +1,8 @@
+D:\systemThinking\inventory-service2\src\main\java\org\systemthinking\inventory_service2\config\DataInitializer.java
+D:\systemThinking\inventory-service2\src\main\java\org\systemthinking\inventory_service2\Controller\InventoryController.java
+D:\systemThinking\inventory-service2\src\main\java\org\systemthinking\inventory_service2\dto\InventoryRequest.java
+D:\systemThinking\inventory-service2\src\main\java\org\systemthinking\inventory_service2\entity\Inventory.java
+D:\systemThinking\inventory-service2\src\main\java\org\systemthinking\inventory_service2\exception\InventoryServiceException.java
+D:\systemThinking\inventory-service2\src\main\java\org\systemthinking\inventory_service2\InventoryService2Application.java
+D:\systemThinking\inventory-service2\src\main\java\org\systemthinking\inventory_service2\repository\InventoryRepository.java
+D:\systemThinking\inventory-service2\src\main\java\org\systemthinking\inventory_service2\service\InventoryService.java

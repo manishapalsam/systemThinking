@@ -1,0 +1,9 @@
+org\systemthinking\inventory_service2\exception\InventoryServiceException.class
+org\systemthinking\inventory_service2\dto\InventoryRequest$InventoryItemRequest.class
+org\systemthinking\inventory_service2\repository\InventoryRepository.class
+org\systemthinking\inventory_service2\dto\InventoryRequest.class
+org\systemthinking\inventory_service2\config\DataInitializer.class
+org\systemthinking\inventory_service2\entity\Inventory.class
+org\systemthinking\inventory_service2\InventoryService2Application.class
+org\systemthinking\inventory_service2\Controller\InventoryController.class
+org\systemthinking\inventory_service2\service\InventoryService.class

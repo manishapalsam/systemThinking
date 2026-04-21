@@ -1,5 +1,8 @@
 server:
   port: 8080
+  tomcat:
+    threads:
+      max: 10
 
 spring:
   application:
@@ -22,11 +25,36 @@ logging:
   level:
     com.systemthinking.orderservice: DEBUG
 
+app:
+  services:
+    inventory-base-url: http://localhost:8082
+    payment-base-url: http://localhost:8083
+
 management:
   endpoints:
     web:
       exposure:
         include: "*"
       base-path: /actuator
+
+resilience4j:
+  Circuitbreaker:
+    instances:
+      inventory:
+        slidingWindowType: COUNT_BASED  #Resilience4j provides predefined configuration properties
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+      payment:
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+
+
+
+
+
+
 
 

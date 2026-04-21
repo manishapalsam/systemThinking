@@ -1,0 +1,43 @@
+server:
+  port: 8085
+  servlet:
+    context-path: /api
+
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:securitydb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+jpa:
+  database-platform: org.hibernate.dialect.H2Dialect
+  hibernate:
+    ddl-auto: create-drop
+  show-sql: true
+  properties:
+    hibernate:
+      format_sql: true
+
+
+h2:
+  console:
+    enabled: true
+    path: /h2-console
+
+
+jwt:
+  secret: MySuperSecretKeyForJWTTokenGenerationThatShouldBeAtLeast256BitsLongForHS512Algorithm
+  expiration: 86400000
+  refresh-expiration: 604800000
+
+app:
+  name: Spring Security JWT Enterprise Application
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.web: INFO
+  pattern: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+

@@ -1,4 +1,6 @@
+
 package com.Microservices.orderService.Service;
+
 
 
 
@@ -19,8 +21,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -34,18 +38,25 @@ public class OrderService {
     private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
 
     private final RestTemplate restTemplate;
+    private final PaymentClient paymentClient;
+    private final InventoryClient inventoryClient;
 
     //    private final PaymentClient paymentClient;
 //    private final InventoryClient inventoryClient;
     public OrderService(OrderRepository orderRepository,
-                        RestTemplate restTemplate) {
+                        RestTemplate restTemplate,
+                        PaymentClient paymentClient,
+                        InventoryClient inventoryClient) {
         this.orderRepository = orderRepository;
         this.restTemplate = restTemplate;
+        this.paymentClient = paymentClient;
+        this.inventoryClient = inventoryClient;
     }
 
     public OrderResponse createOrder(OrderRequest orderRequest) {
 //        paymentClient.processPayment();
 //        inventoryClient.reserveInventory();
+        boolean inventoryReserved = false;
 
         try {
             logger.info("Creating order for customer: {}", orderRequest.getCustomerId());
@@ -55,7 +66,7 @@ public class OrderService {
 
             //reserve inventory
             reserveInventory(orderRequest);
-
+            inventoryReserved = true;
             //process payment
             processPayment(orderId, calculateTotalAmount(orderRequest), orderRequest.getPaymentMethod());
 
@@ -79,6 +90,28 @@ public class OrderService {
                     ))
                     .collect(Collectors.toList());
             order.setItems(orderIems);
+
+            System.out.println(orderIems.stream()
+                    .map(o-> o.getQuantity())
+
+                    .count());
+
+
+            //map->filter
+           List<Integer> prices = orderIems.stream()
+                    .map(o -> o.getQuantity())
+                            .filter(o -> o > 1)  // map → filter → sorted → collect filter reduces data early
+                                    .sorted()
+                                            .collect(Collectors.toList());
+            System.out.println(prices);
+
+
+            //filter → map(filter reduces data early)
+            orderIems.stream()
+                    .map(OrderItem::getQuantity)
+                    .sorted(Comparator.reverseOrder())
+                    .forEach(System.out::println);
+
             //save order
             orderRepository.save(order);
             logger.info("Order created successfully with id: {}", orderId);
@@ -87,6 +120,17 @@ public class OrderService {
             return mapToOrderResponse(order);
         } catch (Exception e) {
             logger.error("Failed to create order for customer {}: {}", orderRequest.getCustomerId(), e.getMessage(), e);
+            if (inventoryReserved) {
+                try {
+                    InventoryRequest inventoryRequest = buildInventoryRequest(orderRequest);
+                    inventoryClient.releaseInventory(inventoryRequest);
+                    logger.info("Inventory rolled back successfully");
+                } catch (Exception ex) {
+                    logger.error("Failed to rollback inventory", ex);
+                }
+            }
+
+
             throw new OrderServiceException("Failed to create order: " + e.getMessage(), e);
         }
 
@@ -124,7 +168,7 @@ public class OrderService {
 
 
     private void reserveInventory(OrderRequest orderRequest) {
-        String inventoryServiceUrl = "http://localhost:8082/api/v1/inventory/reserve";
+       // String inventoryServiceUrl = "http://localhost:8082/api/v1/inventory/reserve";
 
 
         try {
@@ -133,9 +177,9 @@ public class OrderService {
                     .map(item -> new InventoryItemRequest(item.getProductId(), item.getQuantity()))
                     .collect(Collectors.toList());
             InventoryRequest inventoryRequest = new InventoryRequest(inventoryItems);
-            restTemplate.postForEntity(inventoryServiceUrl, inventoryRequest, Void.class);
+            inventoryClient.reserveInventory(inventoryRequest);
             logger.debug("Inventory reserved successfully");
-        } catch (HttpClientErrorException.Conflict ex) {
+        } catch (WebClientResponseException.Conflict ex) {
             // Inventory Business Conflict → Order Business Conflict
 
             System.out.println(ex.getResponseBodyAsString());
@@ -144,8 +188,16 @@ public class OrderService {
                     error.getTitle(),     // errorCode
                     error.getDetails()) ; // message
         } catch (Exception ex) {
+            // 🔹 Check if it's circuit breaker / fallback
+            if (ex.getMessage().contains("Inventory failed")) {
+                throw new DownstreamServiceException(
+                        "Inventory service is down (circuit open)",
+                        ex
+                );
+            }
+
             logger.error("Failed to reserve inventory: {}", ex.getMessage(), ex);
-            //  throw new OrderServiceException("Failed to reserve inventory: " + e.getMessage(), e);
+
             throw new DownstreamServiceException(
                     "Inventory service unavailable",
                     ex
@@ -161,10 +213,15 @@ public class OrderService {
         try {
             logger.debug("Processing payment for order: {}, amount: {}", orderId, amount);
             PaymentRequest paymentRequest = new PaymentRequest(orderId, amount, paymentMethod);
-            restTemplate.postForEntity(paymentServiceUrl, paymentRequest, Void.class);
+            paymentClient.processPayment(paymentRequest);
             logger.debug("Payment processed successfully for order: {}", orderId);
         } catch (Exception e) {
             logger.error("Failed to process payment for order {}: {}", orderId, e.getMessage(), e);
+
+
+            logger.error("Order creation failed: {}", e.getMessage(), e);
+
+
             //throw new OrderServiceException("Failed to process payment: " + e.getMessage(), e);
 
             throw new DownstreamServiceException(
@@ -200,7 +257,7 @@ public class OrderService {
     }
 
 //We use ObjectMapper to convert the raw JSON error response from another service into a Java object so we can read and use its fields (like title and details).
-    private DownstreamApiError  parseError(HttpClientErrorException ex) {
+    private DownstreamApiError  parseError(WebClientResponseException ex) {
 
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -214,6 +271,21 @@ public class OrderService {
             fallback.setDetails("Inventory service error");
             return fallback;
         }
+    }
+
+
+
+    public void  sortingPrice(Order orders){
+
+    }
+
+
+    private InventoryRequest buildInventoryRequest(OrderRequest orderRequest) {
+        List<InventoryItemRequest> items = orderRequest.getItems().stream()
+                .map(i -> new InventoryItemRequest(i.getProductId(), i.getQuantity()))
+                .collect(Collectors.toList());
+
+        return new InventoryRequest(items);
     }
 }
 
