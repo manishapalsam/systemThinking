@@ -1,58 +1,22 @@
-
-WEEK3: COUNCURRENCY & TRANSACTION  CHECK
-
-->RACE CONDITION WHILE RESERVING INVENTORY :
-    CLICK HERE (https://github.com/manishapalsam/systemThinking/blob/fdcfef033653d1dd5b68b06db31d78477b188f3b/RaceCondition_SnapShot.png)
-    
-    CONCURRENT REQUEST = 20
-    P5 STOCK AVAILABILITY = 5
-    ORDER CONFIRMED = 20
-    P5 STOCK AVAILABILITY = 3
-
--> OPTIMISTIC LOCKING using @Version Annotation
-  CLICK HERE (https://github.com/manishapalsam/systemThinking/blob/8e1ecc9d8bb7d3b76032a53106897dd11e1be7d6/Optimistic_Locking.png)
-   
-     CONCURRENT REQUEST = 10
-    P5 STOCK AVAILABILITY = 5
-    ORDER CONFIRMED = 1, OTHER 9 CONCURRENT REQUEST FAILED
-     P5 STOCK AVAILABILITY = 4
-    
-
-->DOUBLE REFUND SITUATION UNDER CONCURRENCY
-  CLICK HERE: (https://github.com/manishapalsam/systemThinking/blob/7180bcfc16b0621592a62c7b851bc53a02cb8a19/DoubleRefund.png)
-  Two concurrent requests hit the refund API at the same time.
-
-    Thread Execution:
-    Thread A → No refund found -> Thread Sleep(10000)
-    Thread B →  No refund found -> Thread Sleep(10000)
-
-    Both threads pass the check.
-    Both insert refund records.
-
-     Result in Database:
-    Two refund rows
-    Same order_id
-    Different refund_id
+WEEK4 ASSIGNMENT:
+->ADDED INVENTORYSERVICE2 & PAYMENTSERVICE2
+->ADDED RESTCLIENT(WEBCLIENT WITH BLOCK()) STILL MAKING SYNCHRONOUS CALL Without timeout configuration of 2seconnds
+->INVENTORYCLIENT & PAYMENTCLIENT  TO MAKE CALL TO INVENTORY AND PAYMENT SERVICES
+->RESILIENCE4J CIRCIUTBREAKER CONFIG IN APPLICATION.YAML 
 
 
-    -> UNIQUE DB CONSTARINT FOR TABLE "REFUNDS"
+SYSTEM BREAK1:INTENTIONALLY STOPPED DOWNSTREAM SERVICES TO CHECK SYSTEM BEHAVIOUR -> RESULT 500 INTERNAL SERVER ERROR
+BUT HERE EVERY REQUEST HITS DOWNSTREAM SERVICES EVEN THOUGH CONSTANTLY MORE THAN 50% REQUESTS ARE FACING SERVERDOWN ERROR WHICH RESULTS IN SLOW SYSTEM
+THERE COMES A RESLIENCE PATTERN CALLED "CIRCUIT BREAKER"
 
-    EG: @Entity
-        @Table(
-            name = "refunds",
-            uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"order_id"})
-            }
-        )
+CIRCUIT BREAKER working
+Step 1: Monitor last 10 calls
+Step 2: If 5 or more fail → OPEN circuit
+Step 3: Stop calling service for 10 sec goes to fallback
+Step 4: After 10 sec → try again
 
-CLICK HERE : (https://github.com/manishapalsam/systemThinking/blob/d16df1db9f198be3f627eba2a82a9039ec5e5a0d/UniqueConstraint.png)
-        Now:
-            Race condition still exists
-            But DB prevented data corruption
-       This is important:
-            We did NOT remove race condition.
-            We prevented duplicate state.
-    
 
+SYSTEM BREAK2: MADE PAYMENT SERVICE SLEEP FOR 8SECS RESULTING IN HIGH LATENCY SYSTEM
+->MADE TIMEDOUT(2SEC) CONFIGURATION IN PAYMENTCLIENT WHICH RESULTS IN EARLY FAILURE RATHER THAN LOW LATENCY BEHAVIOUR
 
 
